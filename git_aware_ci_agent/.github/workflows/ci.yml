@@ -17,4 +17,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run tests
-        run: pytest
+        run: pytest | tee ci.log
+
+      - name: Run CI Diagnosis Agent
+        if: failure()
+        run: |
+          docker build -t ci-agent ./agent
+          docker run -v $PWD:/repo -w /repo ci-agent
